@@ -5,9 +5,11 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from './models/User.js'
 import authMiddleware from './middleware/auth.js'
+import cors from 'cors'
 
 const app = express()
 app.use(express.json())
+app.use(cors())
 const port = 3000
 config()
 const uri = process.env.DB_URI
@@ -18,29 +20,35 @@ mongoose
 
 app.post('/register', async (req, res) => {
   try {
-    const { username, password } = req.body
+    const { email, password, name, role, birthDay } = req.body
     const hashedPassword = await bcrypt.hash(password, 10)
-    const user = new User({ username, password: hashedPassword })
+    const user = new User({
+      email,
+      password: hashedPassword,
+      name,
+      role,
+      birthDay,
+    })
     await user.save()
-    res.status(201).send('User registered')
+    res.status(201).send({ success: true })
   } catch (err) {
-    res.status(500).send(err.message)
+    res.status(500).send({ error: err.message })
   }
 })
 
 app.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body
-    const user = await User.findOne({ username })
+    const { email, password } = req.body
+    const user = await User.findOne({ email })
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send('Invalid credentials')
+      return res.status(401).send({ error: 'Invalid credentials' })
     }
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     })
     res.json({ token })
   } catch (err) {
-    res.status(500).send(err.message)
+    res.status(500).send({ error: err.message })
   }
 })
 
