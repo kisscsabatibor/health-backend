@@ -8,3 +8,12 @@ export const getProfile = async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 }
+
+export const deleteUser = async (req, res) => {
+  try {
+    const response = await User.findByIdAndDelete(req.user.userId)
+    res.json(response)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+}
