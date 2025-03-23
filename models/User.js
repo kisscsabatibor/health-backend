@@ -5,5 +5,7 @@ const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   birthDay: { type: Date, required: true },
   role: { type: String, required: true, default: 'patient' },
+  city: { type: String, default: '' },
+  phoneNumber: { type: String, default: '' },
 })
 export default mongoose.model('User', UserSchema)
