@@ -5,5 +5,6 @@ const ReportSchema = new mongoose.Schema({
   bloodPressure: { type: String },
   weight: { type: Number },
   bloodSugar: { type: Number },
+  createdAt: { type: Date, default: Date.now },
 })
 export default mongoose.model('Report', ReportSchema)
