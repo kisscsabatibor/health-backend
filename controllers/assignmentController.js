@@ -1,6 +1,7 @@
 import Assignment from '../models/Assignment.js'
 import User from '../models/User.js'
 import Report from '../models/Report.js'
+import Request from '../models/Request.js'
 
 export const assignDoctorToPatient = async (req, res) => {
   const patientId = req.user.userId
@@ -19,6 +20,11 @@ export const assignDoctorToPatient = async (req, res) => {
     }
 
     let assignment = await Assignment.findOne({ patient: patientId })
+
+    await Request.deleteOne({
+      patient: patientId,
+      doctor: doctorId,
+    })
 
     if (!assignment) {
       assignment = new Assignment({
