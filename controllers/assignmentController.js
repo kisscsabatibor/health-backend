@@ -1,5 +1,6 @@
 import Assignment from '../models/Assignment.js'
 import User from '../models/User.js'
+import Report from '../models/Report.js'
 
 export const assignDoctorToPatient = async (req, res) => {
   const patientId = req.user.userId
@@ -63,20 +64,23 @@ export const getPatientAssignedDoctors = async (req, res) => {
 
 export const getDoctorsAssignedPatients = async (req, res) => {
   const doctorId = req.user.userId
-  try {
-    const assignment = await Assignment.findOne({
-      doctor: doctorId,
-    }).populate('patients')
 
-    if (!assignment) {
+  try {
+    const assignments = await Assignment.find({ doctors: doctorId })
+      .populate('patient')
+      .exec()
+
+    if (assignments.length === 0) {
       return res
         .status(404)
-        .json({ message: 'No patients assigned to this doctor' })
+        .json({ message: 'No patients found for this doctor.' })
     }
 
-    res.status(200).json(assignment.patients)
+    const patients = assignments.map((assignment) => assignment.patient)
+
+    return res.status(200).json(patients)
   } catch (error) {
-    res.status(500).json({ message: 'Server error' })
+    return res.status(500).json({ message: 'Server error.' })
   }
 }
 
@@ -104,5 +108,36 @@ export const deleteDoctorAssignment = async (req, res) => {
     res.status(200).json({ message: 'Doctor assignment removed successfully' })
   } catch (error) {
     res.status(500).json({ message: 'Server error' })
+  }
+}
+
+export const getPatientReports = async (req, res) => {
+  const doctorId = req.user.userId
+  const patientId = req.params.patientId
+
+  try {
+    const doctor = await User.findById(doctorId)
+    if (!doctor || doctor.role !== 'doctor') {
+      return res.status(403).json({ message: 'Access denied. Not a doctor.' })
+    }
+
+    const assignment = await Assignment.findOne({
+      patient: patientId,
+      doctors: doctorId,
+    })
+
+    if (!assignment) {
+      return res
+        .status(403)
+        .json({ message: 'You are not assigned to this patient.' })
+    }
+
+    const reports = await Report.find({ user: patientId }).sort({
+      createdAt: -1,
+    })
+    return res.status(200).json(reports)
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ message: 'Server error.' })
   }
 }
