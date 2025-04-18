@@ -1,9 +1,19 @@
-import Assignment from '../models/Assignment.js'
-import User from '../models/User.js'
-import Report from '../models/Report.js'
-import Request from '../models/Request.js'
+import { Request, Response } from 'express'
+import Assignment from '../models/Assignment'
+import User from '../models/User'
+import Report from '../models/Report'
+import RequestModel from '../models/Request'
 
-export const assignDoctorToPatient = async (req, res) => {
+interface AuthenticatedRequest extends Request {
+  user: {
+    userId: string
+  }
+}
+
+export const assignDoctorToPatient = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   const patientId = req.user.userId
   const { doctorId } = req.body
 
@@ -12,16 +22,18 @@ export const assignDoctorToPatient = async (req, res) => {
     const doctor = await User.findById(doctorId)
 
     if (!patient || !doctor) {
-      return res.status(400).json({ message: 'Patient or Doctor not found' })
+      res.status(400).json({ message: 'Patient or Doctor not found' })
+      return
     }
 
     if (patient.role !== 'patient' || doctor.role !== 'doctor') {
-      return res.status(400).json({ message: 'Invalid roles' })
+      res.status(400).json({ message: 'Invalid roles' })
+      return
     }
 
     let assignment = await Assignment.findOne({ patient: patientId })
 
-    await Request.deleteOne({
+    await RequestModel.deleteOne({
       patient: patientId,
       doctor: doctorId,
     })
@@ -34,9 +46,10 @@ export const assignDoctorToPatient = async (req, res) => {
       await assignment.save()
     } else {
       if (assignment.doctors.includes(doctorId)) {
-        return res
+        res
           .status(400)
           .json({ message: 'Doctor is already assigned to this patient' })
+        return
       }
 
       assignment.doctors.push(doctorId)
@@ -49,7 +62,10 @@ export const assignDoctorToPatient = async (req, res) => {
   }
 }
 
-export const getPatientAssignedDoctors = async (req, res) => {
+export const getPatientAssignedDoctors = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   const patientId = req.user.userId
   try {
     const assignment = await Assignment.findOne({
@@ -57,9 +73,8 @@ export const getPatientAssignedDoctors = async (req, res) => {
     }).populate('doctors')
 
     if (!assignment) {
-      return res
-        .status(404)
-        .json({ message: 'No doctors assigned to this patient' })
+      res.status(404).json({ message: 'No doctors assigned to this patient' })
+      return
     }
 
     res.status(200).json(assignment.doctors)
@@ -68,7 +83,10 @@ export const getPatientAssignedDoctors = async (req, res) => {
   }
 }
 
-export const getDoctorsAssignedPatients = async (req, res) => {
+export const getDoctorsAssignedPatients = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   const doctorId = req.user.userId
 
   try {
@@ -77,20 +95,22 @@ export const getDoctorsAssignedPatients = async (req, res) => {
       .exec()
 
     if (assignments.length === 0) {
-      return res
-        .status(404)
-        .json({ message: 'No patients found for this doctor.' })
+      res.status(404).json({ message: 'No patients found for this doctor.' })
+      return
     }
 
     const patients = assignments.map((assignment) => assignment.patient)
 
-    return res.status(200).json(patients)
+    res.status(200).json(patients)
   } catch (error) {
-    return res.status(500).json({ message: 'Server error.' })
+    res.status(500).json({ message: 'Server error.' })
   }
 }
 
-export const deleteDoctorAssignment = async (req, res) => {
+export const deleteDoctorAssignment = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   const patientId = req.user.userId
   const { doctorId } = req.body
 
@@ -98,7 +118,8 @@ export const deleteDoctorAssignment = async (req, res) => {
     const assignment = await Assignment.findOne({ patient: patientId })
 
     if (!assignment) {
-      return res.status(404).json({ message: 'Assignment not found' })
+      res.status(404).json({ message: 'Assignment not found' })
+      return
     }
 
     assignment.doctors = assignment.doctors.filter(
@@ -117,14 +138,18 @@ export const deleteDoctorAssignment = async (req, res) => {
   }
 }
 
-export const getPatientReports = async (req, res) => {
+export const getPatientReports = async (
+  req: AuthenticatedRequest,
+  res: Response,
+): Promise<void> => {
   const doctorId = req.user.userId
   const patientId = req.params.patientId
 
   try {
     const doctor = await User.findById(doctorId)
     if (!doctor || doctor.role !== 'doctor') {
-      return res.status(403).json({ message: 'Access denied. Not a doctor.' })
+      res.status(403).json({ message: 'Access denied. Not a doctor.' })
+      return
     }
 
     const assignment = await Assignment.findOne({
@@ -133,17 +158,17 @@ export const getPatientReports = async (req, res) => {
     })
 
     if (!assignment) {
-      return res
-        .status(403)
-        .json({ message: 'You are not assigned to this patient.' })
+      res.status(403).json({ message: 'You are not assigned to this patient.' })
+      return
     }
 
     const reports = await Report.find({ user: patientId }).sort({
       createdAt: -1,
     })
-    return res.status(200).json(reports)
+
+    res.status(200).json(reports)
   } catch (error) {
     console.error(error)
-    return res.status(500).json({ message: 'Server error.' })
+    res.status(500).json({ message: 'Server error.' })
   }
 }
