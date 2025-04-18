@@ -1,6 +1,6 @@
 # HealthBackend
 
-Egészségügyi adatkezekő alkalmazás backend része. A MongoDB Atlas kapcsolattal kerül megvalósításra
+Egészségügyi adatkezelő alkalmazás backend része. A MongoDB Atlas kapcsolattal kerül megvalósításra.
 
 ## Futtatás
 
