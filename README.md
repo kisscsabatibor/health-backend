@@ -1,12 +1,21 @@
 # HealthBackend
 
-Egészségügyi adatkezelő alkalmazás backend része. A MongoDB Atlas kapcsolattal kerül megvalósításra.
+Back-end part of the project Health
 
-## Futtatás
+## Running
 
-.env fájl létrehozása a root mappában és a DB_URI illetve JWT_SECRET megadása (CooSpace)
+Create .env file in root directory, add DB_URI and JWT_SECRET (CooSpace)
+
+### Local
 
 ```
 npm i
 npm run dev
+```
+
+### Docker
+
+```
+docker build -t health-backend .
+docker container run -p 3000:3000 health-backend
 ```
