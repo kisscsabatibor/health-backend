@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
-import { increment } from '../metrics/metricsStore.js'
+import { incrementMetric, METRICS_KEYWORDS } from '../metrics/metricsStore.js'
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -21,7 +21,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     await user.save()
 
     res.status(201).json({ success: true })
-    increment('registrations')
+    incrementMetric(METRICS_KEYWORDS.TOTAL_REGISTRATIONS)
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
     res.status(500).json({ error: message })
@@ -47,7 +47,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       expiresIn: '1h',
     })
 
-    increment('logins')
+    incrementMetric(METRICS_KEYWORDS.TOTAL_LOGINS)
     res.json({ token, role: user.role })
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
