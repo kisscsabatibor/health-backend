@@ -1,5 +1,5 @@
 import { Request as ExpressRequest, Response } from 'express'
-import RequestModel from '../models/Request'
+import RequestModel from '../models/Request.js'
 import { Types } from 'mongoose'
 
 interface AuthenticatedRequest extends ExpressRequest {

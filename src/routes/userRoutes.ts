@@ -5,8 +5,8 @@ import {
   updateProfile,
   getDoctors,
   getPatients,
-} from '../controllers/userController'
-import authMiddleware from '../middleware/auth'
+} from '../controllers/userController.js'
+import authMiddleware from '../middleware/auth.js'
 
 const router = express.Router()
 

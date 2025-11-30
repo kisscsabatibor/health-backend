@@ -1,10 +1,10 @@
 import express from 'express'
 import cors from 'cors'
-import authRoutes from './routes/authRoutes'
-import userRoutes from './routes/userRoutes'
-import reportRoutes from './routes/reportRoutes'
-import assignRoutes from './routes/assignmentRoutes'
-import requestRoutes from './routes/requestRoutes'
+import authRoutes from './routes/authRoutes.js'
+import userRoutes from './routes/userRoutes.js'
+import reportRoutes from './routes/reportRoutes.js'
+import assignRoutes from './routes/assignmentRoutes.js'
+import requestRoutes from './routes/requestRoutes.js'
 
 const app = express()
 app.use(express.json())

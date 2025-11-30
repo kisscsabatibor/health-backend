@@ -1,8 +1,8 @@
 import { Request, Response } from 'express'
-import Assignment from '../models/Assignment'
-import User from '../models/User'
-import Report from '../models/Report'
-import RequestModel from '../models/Request'
+import Assignment from '../models/Assignment.js'
+import User from '../models/User.js'
+import Report from '../models/Report.js'
+import RequestModel from '../models/Request.js'
 
 interface AuthenticatedRequest extends Request {
   user: {

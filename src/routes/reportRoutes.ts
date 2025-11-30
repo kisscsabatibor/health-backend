@@ -3,8 +3,8 @@ import {
   createReport,
   getUserReports,
   deleteReport,
-} from '../controllers/reportController'
-import authMiddleware from '../middleware/auth'
+} from '../controllers/reportController.js'
+import authMiddleware from '../middleware/auth.js'
 
 const router = express.Router()
 

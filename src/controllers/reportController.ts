@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import Report from '../models/Report'
+import Report from '../models/Report.js'
 
 interface AuthenticatedRequest extends Request {
   user: {

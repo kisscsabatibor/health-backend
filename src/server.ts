@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
-import connectDB from './config/db'
-import app from './app'
+import connectDB from './config/db.js'
+import app from './app.js'
 
 config()
 const port = Number(process.env.PORT) || 3000

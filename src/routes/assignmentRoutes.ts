@@ -5,8 +5,8 @@ import {
   getDoctorsAssignedPatients,
   deleteDoctorAssignment,
   getPatientReports,
-} from '../controllers/assignmentController'
-import authMiddleware from '../middleware/auth'
+} from '../controllers/assignmentController.js'
+import authMiddleware from '../middleware/auth.js'
 
 const router = express.Router()
 
