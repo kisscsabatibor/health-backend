@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express'
 import { METRICS_KEYWORDS, incrementMetric } from '../metrics/metricsStore.js'
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
+  if (req.url.includes('metrics')) {
+    return next()
+  }
   const acceptLanguage = <string>req.headers['accept-language']
   incrementMetric(METRICS_KEYWORDS.REQUESTS)
   if (acceptLanguage) {

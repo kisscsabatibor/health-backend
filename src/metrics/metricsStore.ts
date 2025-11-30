@@ -8,6 +8,12 @@ export enum METRICS_KEYWORDS {
   HU_REQUESTS = 'huRequests',
 }
 
+const LANGUAGE_METRICS = [
+  METRICS_KEYWORDS.DE_REQUESTS,
+  METRICS_KEYWORDS.EN_REQUESTS,
+  METRICS_KEYWORDS.HU_REQUESTS,
+] as const
+
 export const metrics: Record<string, { value: number; updatedAt: Date }> =
   Object.values(METRICS_KEYWORDS).reduce(
     (acc, key) => {
@@ -34,9 +40,24 @@ export function setMetric(metricName: string, value: number) {
 }
 
 export function getAllMetrics() {
-  return Object.entries(metrics).map(([name, data]) => ({
-    name,
-    value: data.value,
-    updatedAt: data.updatedAt,
+  return Object.entries(metrics)
+    .filter(
+      ([name]) =>
+        name != METRICS_KEYWORDS.DE_REQUESTS &&
+        name != METRICS_KEYWORDS.EN_REQUESTS &&
+        name != METRICS_KEYWORDS.HU_REQUESTS,
+    )
+    .map(([name, data]) => ({
+      name,
+      value: data.value,
+      updatedAt: data.updatedAt,
+    }))
+}
+
+export function getLanguageMetrics() {
+  return LANGUAGE_METRICS.map((key) => ({
+    name: key,
+    value: metrics[key].value,
+    updatedAt: metrics[key].updatedAt,
   }))
 }
