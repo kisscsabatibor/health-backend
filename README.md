@@ -16,6 +16,6 @@ npm run dev
 ### Docker
 
 ```
-docker build -t health-backend .
+docker build -f Dockserfile.local -t health-backend .
 docker container run -p 3000:3000 health-backend
 ```
