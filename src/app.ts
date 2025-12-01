@@ -7,11 +7,13 @@ import assignRoutes from './routes/assignmentRoutes.js'
 import requestRoutes from './routes/requestRoutes.js'
 import metricsRoutes from './routes/metricsRoutes.js'
 import { requestLogger } from './middleware/requestLogger.js'
+import { allRequestLogger } from './middleware/allRequestLogger.js'
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(requestLogger)
+app.use(allRequestLogger)
 
 app.use('/api/auth', authRoutes)
 app.use('/api/user', userRoutes)
